@@ -68,7 +68,7 @@ graph.addNode(
     const renderPrompt = `Convert the following welcome email into a responsive HTML email using the branding from https://www.endpoint.com.
 Use their brand colors (navy blue, white, light gray), and use real logo/icon URLs from their site when appropriate.
 DO NOT include markdown code fences or explanatory text — only output the raw HTML.
-Replace [User's Name], [support email], etc. with generic placeholders like user@example.com.
+Replace [User's Name], [support email], etc. with generic placeholders like user@example.com. Furthermore, ensure the footer includes the current year ${new Date().getFullYear()}.
 ---
 ${state.emailContent}`;
 
@@ -78,10 +78,6 @@ ${state.emailContent}`;
 
     // 🧹 Cleanup: Remove backticks or triple backticks if any
     html = html.replace(/```html|```/g, "").trim();
-
-    // 🕒 Insert the current year
-    const year = new Date().getFullYear();
-    html = html.replace(/\[COPYRIGHT_YEAR\]|\{COPYRIGHT_YEAR\}/g, `${year}`);
 
     // 💾 Write to file
     const outputPath = "src/results/email-content.html";
