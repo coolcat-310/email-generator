@@ -69,9 +69,6 @@ graph.addEdge("__start__", "hello");
 const app = graph.compile();
 
 // 7. Run with LangSmith tracing enabled by ENV
-const result = await app.invoke(
-  { userInput: "I'm feeling sad today!" },
-  { runName: "pr-impassioned-integration-81" }
-);
+const result = await app.invoke({ userInput: "I'm feeling happy today!" });
 
 console.log("🟢 LangGraph Output:", result?.result);
