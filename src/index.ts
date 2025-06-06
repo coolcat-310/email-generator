@@ -110,8 +110,8 @@ console.log("\ud83c\udf81 LangGraph Completed with state:", JSON.stringify(resul
 
 // 9. Save final email content to file
 if (result.approved && result.emailContent) {
-  await fs.writeFile("email-content.txt", result.emailContent, "utf-8");
-  console.log("\ud83d\udcc1 Email content saved to email-content.txt");
+  await fs.writeFile("src/results/email-content.txt", result.emailContent, "utf-8");
+  console.log("\ud83d\udcc1 Email content saved to src/results/email-content.txt");
 } else {
   console.warn("\u26a0\ufe0f Email not saved: content missing or not approved.");
 }
