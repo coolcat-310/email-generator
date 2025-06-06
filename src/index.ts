@@ -1,9 +1,9 @@
 import "dotenv/config";
 import { z } from "zod";
-import { StateGraph, END } from "@langchain/langgraph";
+import { END, StateGraph } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 
-// Define schema
+// 1. Define shared state
 const stateSchema = z.object({
   userInput: z.string().optional(),
   content: z.string().optional(),
@@ -12,50 +12,66 @@ const stateSchema = z.object({
   result: z.string().optional(),
 });
 
-// Create graph with schema
+// 2. Instantiate the stateful graph
 const graph = new StateGraph(stateSchema);
 
-// LLM setup
+// 3. LLM setup
 const model = new ChatOpenAI({
   model: "gpt-4o",
   temperature: 0,
 });
 
-// Add nodes
-graph.addNode("hello", async (state) => {
-  const userInput = state.userInput ?? "Say Hello";
-  const response = await model.invoke([{ role: "user", content: userInput }]);
+// 4. Add nodes with state logging
+graph.addNode(
+  "hello",
+  async (state: Record<string, any>) => {
+    console.log("🟡 Node: hello, State:", state);
+    const userInput = state.userInput ?? "Say Hello";
+    const response = await model.invoke([{ role: "user", content: userInput }]);
+    return {
+      content: response.content,
+      userInput,
+      timestamp: new Date().toISOString(),
+    };
+  },
+  {
+    ends: ["positive", "negative"],
+  }
+);
+
+graph.addNode("positive", async (state: Record<string, any>) => {
+  console.log("🟡 Node: positive, State:", state);
   return {
-    content: response.content,
-    userInput,
-    timestamp: new Date().toISOString(),
+    ...state,
+    sentiment: "positive",
+    result: "Glad to hear that!",
   };
 });
 
-graph.addNode("positive", async (state) => ({
-  ...state,
-  sentiment: "positive",
-  result: "Glad to hear that!",
-}));
-
-graph.addNode("negative", async (state) => ({
-  ...state,
-  sentiment: "negative",
-  result: "Sorry to hear that.",
-}));
-
-// Add conditional edges
-graph.addConditionalEdges("hello", async (state) => {
-  return state.content?.toLowerCase().includes("good") ? "positive" : "negative";
+graph.addNode("negative", async (state: Record<string, any>) => {
+  console.log("🟡 Node: negative, State:", state);
+  return {
+    ...state,
+    sentiment: "negative",
+    result: "Sorry to hear that.",
+  };
 });
 
+// 5. Add conditional edges and flows
+graph.addConditionalEdges("hello", async (state) =>
+  state.content?.toLowerCase().includes("good") ? "positive" : "negative"
+);
 graph.addEdge("positive", END);
 graph.addEdge("negative", END);
+graph.addEdge("__start__", "hello");
 
-// ✅ THIS is the correct API for StateGraph
-const app = graph.setEntryPoint("hello").compile();
+// 6. Compile the graph
+const app = graph.compile();
 
-// Run
-const result = await app.invoke({ userInput: "I'm feeling good today!" });
+// 7. Run with LangSmith tracing enabled by ENV
+const result = await app.invoke(
+  { userInput: "I'm feeling sad today!" },
+  { runName: "pr-impassioned-integration-81" }
+);
 
 console.log("🟢 LangGraph Output:", result?.result);
