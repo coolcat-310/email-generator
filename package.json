@@ -1,12 +1,14 @@
 {
   "name": "email-generator",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "repository": "https://github.com/coolcat-310/email-generator.git",
   "author": "juan <navarretejuan09@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "tsx src/index.ts",
+    "start": "tsx src/index.ts"
+  },
   "devDependencies": {
     "@types/node": "^22.15.30",
     "tsx": "^4.19.4",
@@ -16,6 +18,9 @@
     "@langchain/community": "^0.3.45",
     "@langchain/core": "^0.3.57",
     "@langchain/langgraph": "^0.3.1",
-    "@langchain/openai": "^0.5.12"
+    "@langchain/openai": "^0.5.12",
+    "dotenv": "^16.5.0",
+    "langsmith": "^0.3.30",
+    "zod": "^3.25.55"
   }
 }
