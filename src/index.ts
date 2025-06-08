@@ -2,9 +2,8 @@ import "dotenv/config";
 import { StateGraph } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { stateSchema } from "./state/schema";
-import { createEmailGeneratorNode } from "./nodes/emailGenerator";
-import { createTextVerifierNode } from "./nodes/textVerifier";
-import { createHtmlRendererNode } from "./nodes/htmlRenderer";
+import { createEmailGeneratorNode, createHtmlRendererNode, createTextVerifierNode } from "./nodes";
+
 
 const graph = new StateGraph(stateSchema);
 
