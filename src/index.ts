@@ -3,7 +3,7 @@ import { z } from "zod";
 import { END, StateGraph } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { promises as fs } from "fs";
-import path from "path";
+import { loadApprovedEmails } from "./utility/loadApprovedEmails";
 
 // Shared state definition
 const stateSchema = z.object({
@@ -36,12 +36,30 @@ graph.addNode("email-generator", async (state) => {
 graph.addNode("text-verifier", async (state) => {
   console.log("🕵️ [text-verifier] Reviewing State:", JSON.stringify(state, null, 2));
 
-  const verifyPrompt = `Review the following email for grammar and business tone:
+  const examples = loadApprovedEmails();
+
+  const approvedEmailExamples = examples.map(
+    (ex) => `Subject: ${ex.subject}\n\n${ex.email}`
+  ).join("\n\n---\n\n");
+
+  const verifyPrompt = `You are a business communications expert.
+
+First, review the following set of previously approved welcome emails. These represent the desired writing style, tone, structure, and professionalism expected in all outgoing communications from Endpoint:
+
+${approvedEmailExamples}
+
 ---
+
+Now, evaluate the email below. Determine whether it aligns with the tone, clarity, grammar, and professional standards demonstrated above:
+
 ${state.emailContent}
+
 ---
-If suitable, reply with: "APPROVED".
-If not, suggest improvements without rewriting the whole email.`;
+
+If the email meets the expected standards, reply only with: "APPROVED".
+
+If it does not, provide specific and constructive feedback for improvement. Your suggestions should include concrete examples of what to change and why, but do not rewrite the entire email. Focus only on clarity, tone, grammar, and stylistic alignment.`;
+
 
   const response = await model.invoke([{ role: "user", content: verifyPrompt }]);
   const content = typeof response.content === "string"
