@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { stateSchema } from '../state/schema';
 import { withValidation } from '../utility/withValidation';
 
-const welcomeEmailPrompt = `
+const _welcomeEmailPrompt = `
 Write a welcome email from Endpoint (https://www.endpoint.com/) for a new user. 
 Thank them and highlight Endpoint’s benefits. 
 Keep it professional and appropriate for a business environment.`.trim();

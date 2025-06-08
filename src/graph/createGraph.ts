@@ -18,11 +18,11 @@ export function buildEmailGraph(model: ChatOpenAI) {
   graph.addNode(htmlRendererNode.id, htmlRendererNode.run, { ends: htmlRendererNode.ends });
 
   // Routing
-  // @ts-ignore
+  // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
   graph.addEdge("__start__", emailGeneratorNode.id);
-  // @ts-ignore
+  // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
   graph.addEdge(emailGeneratorNode.id, textVerifierNode.id);
-  // @ts-ignore
+  // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
   graph.addConditionalEdges(textVerifierNode.id, async (state) =>
     state.approved ? htmlRendererNode.id : emailGeneratorNode.id
   );

@@ -58,16 +58,16 @@ graph.addNode("negative", async (state: Record<string, any>) => {
 });
 
 // 5. Add conditional edges and flows
-// @ts-ignore type checking for conditional edges
+// @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
 graph.addConditionalEdges("hello", async (state) =>
   state.content?.toLowerCase().includes("good") ? "positive" : "negative"
 );
 
-// @ts-ignore type checking for edges
+// @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
 graph.addEdge("positive", END);
-// @ts-ignore type checking for edges
+// @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
 graph.addEdge("negative", END);
-// @ts-ignore type checking for edges
+// @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
 graph.addEdge("__start__", "hello");
 
 // 6. Compile the graph
