@@ -3,6 +3,7 @@ import { StateGraph } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { stateSchema } from "./state/schema";
 import { createEmailGeneratorNode, createHtmlRendererNode, createTextVerifierNode } from "./nodes";
+import { withMetadata } from "./utility/withMetadata";
 
 
 const graph = new StateGraph(stateSchema);
@@ -14,20 +15,20 @@ const model = new ChatOpenAI({
 
 // Register Nodes
 const emailGeneratorNode = createEmailGeneratorNode(model);
-graph.addNode(emailGeneratorNode.id, emailGeneratorNode.run, { ends: emailGeneratorNode.ends });
+graph.addNode(emailGeneratorNode.id, withMetadata(emailGeneratorNode.id, stateSchema, emailGeneratorNode.run), { ends: emailGeneratorNode.ends });
 
 
 const textVerifierNode = createTextVerifierNode(model);
 graph.addNode(
   textVerifierNode.id,
-  textVerifierNode.run,
+  withMetadata(textVerifierNode.id, stateSchema, textVerifierNode.run),
   { ends: textVerifierNode.ends }
 );
 
 const htmlRendererNode = createHtmlRendererNode(model);
 graph.addNode(
   htmlRendererNode.id,
-  htmlRendererNode.run,
+  withMetadata(htmlRendererNode.id, stateSchema, htmlRendererNode.run),
   { ends: htmlRendererNode.ends }
 );
 
