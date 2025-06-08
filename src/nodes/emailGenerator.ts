@@ -1,12 +1,15 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
 import { stateSchema } from '../state/schema';
+import { withValidation } from '../utility/withValidation';
 
 export function createEmailGeneratorNode(model: ChatOpenAI) {
   return {
     id: 'email-generator',
     description: 'Generates a welcome email for new users of Endpoint.',
-    async run(state: z.infer<typeof stateSchema>) {
+    run: withValidation(
+      stateSchema,
+      async (state: z.infer<typeof stateSchema>) => {
       console.log('✉️ [email-generator] Current State:', JSON.stringify(state, null, 2));
 
       const prompt = state.feedback
@@ -22,7 +25,8 @@ Keep it professional and appropriate for a business environment.`.trim();
         ...state,
         emailContent: response.content,
       };
-    },
+    }
+  ),
     ends: ['text-verifier'],
   };
 }

@@ -3,12 +3,15 @@ import { z } from 'zod';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { stateSchema } from '../state/schema';
+import { withValidation } from '../utility/withValidation';
 
 export function createHtmlRendererNode(model: ChatOpenAI) {
   return {
     id: 'html-renderer',
     description: 'Converts approved email content into styled HTML using Endpoint branding and saves it.',
-    async run(state: z.infer<typeof stateSchema>) {
+    run: withValidation(
+      stateSchema, 
+      async (state: z.infer<typeof stateSchema>) => {
       console.log('🎨 [html-renderer] Converting email to HTML...');
 
       const htmlPrompt = `
@@ -43,7 +46,8 @@ ${state.emailContent}
         ...state,
         html: htmlOutput,
       };
-    },
+    }
+  ),
     ends: [], // final node
   };
 }

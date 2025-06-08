@@ -2,12 +2,15 @@ import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
 import { loadApprovedEmails } from '../utility/loadApprovedEmails';
 import { stateSchema } from '../state/schema';
+import { withValidation } from '../utility/withValidation';
 
 export function createTextVerifierNode(model: ChatOpenAI) {
   return {
     id: 'text-verifier',
     description: 'Verifies that the email content meets business tone and grammar standards by comparing to approved examples.',
-    async run(state: z.infer<typeof stateSchema>) {
+    run: withValidation(
+      stateSchema,
+      async (state: z.infer<typeof stateSchema>) => {
       console.log('🕵️ [text-verifier] Reviewing State:', JSON.stringify(state, null, 2));
 
       const examples = loadApprovedEmails();
@@ -50,7 +53,8 @@ If the draft does not meet the standard, list specific improvements that should 
         approved: false,
         feedback: rawOutput,
       };
-    },
+    }
+  ),
     ends: ['email-generator', 'html-renderer'],
   };
 }
