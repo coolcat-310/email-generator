@@ -77,6 +77,8 @@ The system will:
 5. Save the HTML output to src/results/email-output.html.
 
 ## 🧠 Agents & Graph Flow
+<img width="690" alt="Screenshot 2025-06-08 at 2 44 52 PM" src="https://github.com/user-attachments/assets/68528d08-5e09-4ae5-ae84-af8f5d3eb376" />
+
 
 ## 🔎 LangSmith Integration
 
