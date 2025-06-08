@@ -1,48 +1,10 @@
 import "dotenv/config";
-import { StateGraph } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
-import { stateSchema } from "./state/schema";
-import { createEmailGeneratorNode, createHtmlRendererNode, createTextVerifierNode } from "./nodes";
-import { withMetadata } from "./utility/withMetadata";
+import { buildEmailGraph } from "./graph/createGraph";
+import { createOpenAIModel } from "./models/openai";
 
+const model = createOpenAIModel();
 
-const graph = new StateGraph(stateSchema);
-
-const model = new ChatOpenAI({
-  model: "gpt-4o",
-  temperature: 0.7,
-});
-
-// Register Nodes
-const emailGeneratorNode = createEmailGeneratorNode(model);
-graph.addNode(emailGeneratorNode.id, withMetadata(emailGeneratorNode.id, stateSchema, emailGeneratorNode.run), { ends: emailGeneratorNode.ends });
-
-
-const textVerifierNode = createTextVerifierNode(model);
-graph.addNode(
-  textVerifierNode.id,
-  withMetadata(textVerifierNode.id, stateSchema, textVerifierNode.run),
-  { ends: textVerifierNode.ends }
-);
-
-const htmlRendererNode = createHtmlRendererNode(model);
-graph.addNode(
-  htmlRendererNode.id,
-  withMetadata(htmlRendererNode.id, stateSchema, htmlRendererNode.run),
-  { ends: htmlRendererNode.ends }
-);
-
-// Routing
-// @ts-ignore
-graph.addEdge("__start__", emailGeneratorNode.id);
-// @ts-ignore
-graph.addEdge(emailGeneratorNode.id, textVerifierNode.id);
-// @ts-ignore
-graph.addConditionalEdges(textVerifierNode.id, async (state) =>
-  state.approved ? htmlRendererNode.id : emailGeneratorNode.id
-);
-
-const app = graph.compile();
+const app = buildEmailGraph(model);
 const result = await app.invoke(
   { userInput: "Generate a welcome email for new Endpoint users." },
   { runName: "welcome-email-html-generation" }
