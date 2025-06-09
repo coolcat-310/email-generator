@@ -48,6 +48,6 @@ export function createHtmlRendererNode(model: ChatOpenAI) {
       };
     }
   ),
-    ends: [], // final node
+    ends: [], // final node, it implicitly routes to __end__ after execution
   };
 }

@@ -30,13 +30,4 @@ describe("email-generator node", () => {
     const result = await node.run(state);
     expect(result.emailContent).toBe("Revised email based on feedback.");
   });
-
-  it.skip("preserves previous state keys", async () => {
-    const state = {
-      userInput: "Some input",
-      someOtherField: "should persist",
-    } as any;
-    const result = await node.run(state);
-    expect(result.someOtherField).toBe("should persist");
-  });
 });
