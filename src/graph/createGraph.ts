@@ -1,4 +1,4 @@
-import { StateGraph } from '@langchain/langgraph';
+import { StateGraph, START } from '@langchain/langgraph';
 import { ChatOpenAI } from "@langchain/openai";
 import { stateSchema } from '../state/schema';
 import { createEmailGeneratorNode, createHtmlRendererNode, createTextVerifierNode } from '../nodes';
@@ -19,7 +19,7 @@ export function buildEmailGraph(model: ChatOpenAI) {
 
   // Routing
   // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
-  graph.addEdge("__start__", emailGeneratorNode.id);
+  graph.addEdge(START, emailGeneratorNode.id);
   // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict
   graph.addEdge(emailGeneratorNode.id, textVerifierNode.id);
   // @ts-expect-error - LangGraph expects a fixed set of node keys, and dynamic keys cause a type conflict

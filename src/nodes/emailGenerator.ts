@@ -8,7 +8,7 @@ Write a welcome email from Endpoint (https://www.endpoint.com/) for a new user.
 Thank them and highlight Endpoint’s benefits. 
 Keep it professional and appropriate for a business environment.`.trim();
 
-const marketingEmailPrompt = `Write a marketing email for Endpoint (https://www.endpoint.com/) to promote our new features.`;
+const _marketingEmailPrompt = `Write a marketing email for Endpoint (https://www.endpoint.com/) to promote our new features.`;
 
 export function createEmailGeneratorNode(model: ChatOpenAI) {
   return {
@@ -21,7 +21,7 @@ export function createEmailGeneratorNode(model: ChatOpenAI) {
 
       const prompt = state.feedback
         ? `Revise the email for Endpoint based on this feedback: "${state.feedback}".`
-        : marketingEmailPrompt;
+        : _welcomeEmailPrompt;
 
       const response = await model.invoke([{ role: 'user', content: prompt }]);
 
