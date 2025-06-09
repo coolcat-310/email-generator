@@ -15,18 +15,18 @@ export function createHtmlRendererNode(model: ChatOpenAI) {
       console.log('🎨 [html-renderer] Converting email to HTML...');
 
       const htmlPrompt = `
-Convert the following welcome email into professional, production-ready HTML.
+        Convert the following welcome email into professional, production-ready HTML.
 
-- Use brand colors from https://www.endpoint.com/ (e.g., navy blue: #002855, white: #ffffff, light gray: #e5e5e5).
-- Use the Endpoint logo from: https://www.endpoint.com/images/logos/endpoint-logo.svg
-- Do not include any text before or after the HTML output.
-- Ensure the footer includes the current year dynamically (e.g., © 2025 Endpoint).
-- Ensure this email renders well on mobile.
+        - Use brand colors from https://www.endpoint.com/ (e.g., navy blue: #087EA8, white: #f7f7f7, light gray: #757575).
+        - Use the Endpoint logo from: https://cdn.prod.website-files.com/629dd25ce5542b0c7b8f8047/62bc58ec1f862550e79fed3d_Endpoint_Logo_Registered_Primary_200.svg
+        - Do not include any text before or after the HTML output.
+        - Ensure the footer includes the current year dynamically (e.g., © 2025 Endpoint).
+        - Ensure this email renders well on mobile.
 
-Email:
----
-${state.emailContent}
-`;
+        Email:
+        ---
+        ${state.emailContent}
+        `;
 
       const response = await model.invoke([{ role: 'user', content: htmlPrompt }]);
 
