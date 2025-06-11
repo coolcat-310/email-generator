@@ -5,4 +5,5 @@ export const stateSchema = z.object({
   emailContent: z.string().optional(),
   feedback: z.string().optional(),
   approved: z.boolean().optional(),
+  task: z.string().optional(),
 });
