@@ -6,4 +6,5 @@ export const stateSchema = z.object({
   feedback: z.string().optional(),
   approved: z.boolean().optional(),
   task: z.string().optional(),
+  hydratedEmail: z.string().optional(),
 });

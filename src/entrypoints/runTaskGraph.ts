@@ -4,7 +4,7 @@ export async function runTaskGraph() {
   const taskApp = buildTaskGraph();
 
   const taskResult = await taskApp.invoke(
-    { userInput: "be creative and think outside the box." },
+    { userInput: "Generate Email content" },
     { runName: "task-generation" }
   );
 

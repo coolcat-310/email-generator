@@ -5,38 +5,53 @@ import { z } from 'zod';
 import { stateSchema } from '../state/schema';
 import { withValidation } from '../utility/withValidation';
 import { loadApprovedEmails } from '../utility/loadApprovedEmails';
+import { extractEmailSection } from '../utility/extractEmailSection';
+import { normalizeContent } from '../utility/normalizeContent';
 
-const taskPrompt = 'tell me a joke';
+const context = 'John Does is missing contact information and needs to log into the Endpoint application to complete his personal information.';
 
 async function generateTask(
-	model: ChatOpenAI | Ollama,
-	state: z.infer<typeof stateSchema>
+  model: ChatOpenAI | Ollama,
+  state: z.infer<typeof stateSchema>
 ) {
-	try {
-		const examples = loadApprovedEmails();
-		const approvedEmailExamples = examples
-			.map((ex) => `Subject: ${ex.subject}\n\n${ex.email}`)
-			.join('\n\n---\n\n');
+  try {
+    const examples = loadApprovedEmails();
+    const approvedEmailExamples = examples
+      .map((ex) => `Subject: ${ex.subject}\n\n${ex.email}`)
+      .join('\n\n---\n\n');
 
-		const prompt = `
-			Here are approved email examples:
-			${approvedEmailExamples}
+    const prompt = `
+      Here are approved email examples:
+      ${approvedEmailExamples}
 
-			Generate a task based on the following context: 'be creative and think outside the box.'
-			`.trim();
+      Generate a task based on the following context: ${context}
+    `.trim();
 
-		const response = await model.invoke([{ role: 'user', content: taskPrompt }]);
-		const taskContent = typeof response === 'string' ? response : response.content;
-		return {
-			...state,
-			task: taskContent,
-		};
-	} catch (err) {
-		console.error('Task generation failed:', err);
-		// either rethrow or return a fallback state
-		throw new Error('Could not generate task');
-	}
+    const response = await model.invoke([{ role: 'user', content: prompt }]);
+
+    let taskContent: string;
+
+    if (typeof response === 'string') {
+      taskContent = response;
+    } else if ('content' in response && typeof response.content === 'string') {
+      taskContent = response.content;
+    } else {
+      throw new Error("Unexpected response format from model.invoke");
+    }
+
+    const normalizedContent = normalizeContent(taskContent);
+    const extractedContent = extractEmailSection(normalizedContent);
+
+    return {
+      ...state,
+      task: extractedContent,
+    };
+  } catch (err) {
+    console.error('Task generation failed:', err);
+    throw new Error('Could not generate task');
+  }
 }
+
 
 export function createTaskGeneratorNode (model: ChatOpenAI | Ollama) {
 	return {
@@ -46,7 +61,7 @@ export function createTaskGeneratorNode (model: ChatOpenAI | Ollama) {
 			stateSchema,
 			(state) => generateTask(model, state)
 		),
-		ends: [],
+		ends: ['email-hydration'],
 	}
 }
 
