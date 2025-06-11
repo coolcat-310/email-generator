@@ -8,6 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "tsx src/index.ts",
+    "start:email": "tsx src/index.ts email",
+    "start:task": "tsx src/index.ts task",
     "test": "vitest",
     "lint": "eslint 'src/**/*.ts'",
     "eval": "tsx src/evaluations/evaluators/evaluateEmailGenerator.ts"
