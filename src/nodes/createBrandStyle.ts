@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { stateSchema } from "../state/schema";
 import { withValidation } from "../utility/withValidation";
+import { extractBrandName } from "../utility/extractBrandName";
 
 export function createBrandStyleNode() {
   return {
@@ -9,7 +10,8 @@ export function createBrandStyleNode() {
     run: withValidation(
       stateSchema,
       async (state: z.infer<typeof stateSchema>) => {
-        console.log("🎨 [brand-style] Injecting brand information...");
+        const extracted = state.userInput ? extractBrandName(state.userInput) : "DefaultBrand";
+        console.log(`🔎 Extracted brandName: ${extracted}`);
 
         // For now: hardcoded for Endpoint
         const brandName = "Endpoint";
@@ -20,7 +22,7 @@ export function createBrandStyleNode() {
 
         return {
           ...state,
-          brandName,
+          brandName: extracted ?? brandName,
           logo,
           emailSignature,
           primaryColor,

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, Mock } from "vitest";
 import fs from "fs";
 
 import { loadApprovedEmails } from "../utility/loadApprovedEmails";
@@ -31,7 +31,7 @@ Please complete your profile before closing day.
 `;
 
   beforeEach(() => {
-    (fs.readFileSync as unknown as vi.Mock).mockReturnValue(mockMarkdownContent);
+    (fs.readFileSync as unknown as Mock).mockReturnValue(mockMarkdownContent);
   });
 
   afterEach(() => {
@@ -71,7 +71,7 @@ Please complete your profile before closing day.
       No subject provided here.
       `;
 
-    (fs.readFileSync as unknown as vi.Mock).mockReturnValue(partialMarkdown);
+    (fs.readFileSync as unknown as Mock).mockReturnValue(partialMarkdown);
     const results = loadApprovedEmails();
 
     expect(results).toHaveLength(1);
