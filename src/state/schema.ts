@@ -7,4 +7,9 @@ export const stateSchema = z.object({
   approved: z.boolean().optional(),
   task: z.string().optional(),
   hydratedEmail: z.string().optional(),
+  brandName: z.string().optional(),
+  logo: z.string().optional(),
+  emailSignature: z.string().optional(),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
 });

@@ -1,0 +1,33 @@
+import { z } from "zod";
+import { stateSchema } from "../state/schema";
+import { withValidation } from "../utility/withValidation";
+
+export function createBrandStyleNode() {
+  return {
+    id: "brand-style",
+    description: "Provides brand-specific email theming details.",
+    run: withValidation(
+      stateSchema,
+      async (state: z.infer<typeof stateSchema>) => {
+        console.log("🎨 [brand-style] Injecting brand information...");
+
+        // For now: hardcoded for Endpoint
+        const brandName = "Endpoint";
+        const logo = "https://cdn.prod.website-files.com/629dd25ce5542b0c7b8f8047/62bc58ec1f862550e79fed3d_Endpoint_Logo_Registered_Primary_200.svg";
+        const emailSignature = "The Endpoint Team";
+        const primaryColor = "#087EA8";
+        const secondaryColor = "#f5f5f7";
+
+        return {
+          ...state,
+          brandName,
+          logo,
+          emailSignature,
+          primaryColor,
+          secondaryColor,
+        };
+      }
+    ),
+    ends: ['email-hydration'],
+  };
+}

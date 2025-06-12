@@ -8,7 +8,7 @@ import { loadApprovedEmails } from '../utility/loadApprovedEmails';
 import { extractEmailSection } from '../utility/extractEmailSection';
 import { normalizeContent } from '../utility/normalizeContent';
 
-const context = 'John Does is missing contact information and needs to log into the Endpoint application to complete his personal information.';
+const context = 'John Does is missing contact information and needs to log into the BrandName, Endpoint, application to complete his personal information.';
 
 async function generateTask(
   model: ChatOpenAI | Ollama,
