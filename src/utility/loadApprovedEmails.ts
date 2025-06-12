@@ -12,31 +12,33 @@ export function loadApprovedEmails(): {
   subject: string;
   email: string;
 }[] {
-  // ESM-compatible __dirname setup
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
   const markdownPath = path.join(__dirname, "../resources/approved-messages.md");
   const content = fs.readFileSync(markdownPath, "utf-8");
 
-  // Parse markdown manually by looking for patterns
   const blocks = content
+    .trim()
     .split(/^##+\s+/gm)
     .filter((block) => block.trim().length > 0);
 
   const examples = blocks.map((block) => {
     const lines = block.trim().split("\n").filter(Boolean);
+    const cleanLines = lines.map((line) => line.trim());
 
-    const taskLine = lines.find((line) => line.startsWith("Task Name:"));
-    const subjectLine = lines.find((line) => line.startsWith("Subject:"));
-    const emailLineIndex = lines.findIndex((line) => line.startsWith("Email:"));
+    const taskLine = cleanLines.find((line) => line.startsWith("Task Name:"));
+    const subjectLine = cleanLines.find((line) => line.startsWith("Subject:"));
+    const emailLineIndex = cleanLines.findIndex((line) => line.startsWith("Email:"));
 
     const taskName = taskLine?.replace("Task Name:", "").trim() ?? "Unknown";
     const subject = subjectLine?.replace("Subject:", "").trim() ?? "No subject";
-    const email = lines.slice(emailLineIndex + 1).join("\n").trim();
+    const email = cleanLines.slice(emailLineIndex + 1).join("\n").trim();
 
     return { taskName, subject, email };
   });
 
   return examples;
 }
+
+
