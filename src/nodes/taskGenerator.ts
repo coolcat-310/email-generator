@@ -6,8 +6,6 @@ import { stateSchema, taskSchema } from '../state/schema';
 import { withValidation } from '../utility/withValidation';
 import { loadApprovedEmails } from '../utility/loadApprovedEmails';
 
-
-
 const parser = StructuredOutputParser.fromZodSchema(taskSchema);
 
 const context = 'John Does is missing contact information and needs to log into application to complete his personal information.';
@@ -25,14 +23,14 @@ async function generateTask(
     const formatInstructions = parser.getFormatInstructions();
 
     const prompt = `
-Here are approved email examples:
+      Here are approved email examples:
 
-${approvedEmailExamples}
+      ${approvedEmailExamples}
 
-Now generate a new task based on the following context: "${context}".
+      Now generate a new task based on the following context: "${context}".
 
-${formatInstructions}
-`.trim();
+      ${formatInstructions}
+      `.trim();
 
     const response = await model.invoke([{ role: 'user', content: prompt }]);
 
