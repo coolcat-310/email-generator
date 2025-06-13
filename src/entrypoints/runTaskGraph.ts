@@ -1,7 +1,7 @@
 import { buildTaskGraph } from "../graph/TaskOrientedGraph";
-import { createModel } from "../models/modelResolver";
+import { createModel, ModelProvider } from "../models/modelResolver";
 
-export async function runTaskGraph(modelArg: string) {
+export async function runTaskGraph(modelArg: ModelProvider) {
   const model = createModel(modelArg);
   const taskApp = buildTaskGraph(model);
 

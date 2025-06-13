@@ -1,8 +1,10 @@
 import { createOpenAIModel } from "./openai";
 import { createOllamaModel } from "./ollama";
 
-export function createModel(modelType: string) {
-  switch (modelType.toLowerCase()) {
+export type ModelProvider = "openai" | "ollama";
+
+export function createModel(modelType: ModelProvider) {
+  switch (modelType) {
     case "openai":
       return createOpenAIModel();
     case "ollama":
