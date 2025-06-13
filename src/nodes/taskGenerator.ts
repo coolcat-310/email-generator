@@ -4,10 +4,8 @@ import { z } from 'zod';
 import { stateSchema } from '../state/schema';
 import { withValidation } from '../utility/withValidation';
 import { loadApprovedEmails } from '../utility/loadApprovedEmails';
-import { normalizeContent } from '../utility/normalizeContent';
-import { parseTaskOutput } from '../utility/parseTaskOutput';
 
-const context = 'John Does is missing contact information and needs to log into the BrandName, Endpoint, application to complete his personal information.';
+const context = 'John Does is missing contact information and needs to log into application to complete his personal information.';
 
 async function generateTask(
   model: ChatOpenAI | Ollama,
@@ -16,35 +14,46 @@ async function generateTask(
   try {
     const examples = loadApprovedEmails();
     const approvedEmailExamples = examples
-      .map((ex) => `Subject: ${ex.subject}\n\n${ex.email}`)
+      .map((ex) => `Task Name: ${ex.taskName}\nSubject: ${ex.subject}\nEmail: ${ex.email}`)
       .join('\n\n---\n\n');
 
     const prompt = `
-      Here are approved email examples:
-      ${approvedEmailExamples}
+        Here are approved email examples:
 
-      Generate a task based on the following context: ${context}
-    `.trim();
+        ${approvedEmailExamples}
+
+        Now generate a new task based on the following context: "${context}".
+
+        Please return only valid JSON with the following structure:
+
+        {
+          "taskName": "<task name>",
+          "subject": "<subject>",
+          "emailContent": "<email body text>"
+        }
+
+        The JSON must not contain any extra text or explanation.
+        `.trim();
 
     const response = await model.invoke([{ role: 'user', content: prompt }]);
 
-    let rawOutput: string;
+    let content: string;
+
     if (typeof response === 'string') {
-      rawOutput = response;
+      content = response;
     } else if ('content' in response && typeof response.content === 'string') {
-      rawOutput = response.content;
+      content = response.content;
     } else {
       throw new Error("Unexpected response format from model.invoke");
     }
 
-    const normalizedContent = normalizeContent(rawOutput);
-    const parsed = parseTaskOutput(normalizedContent);
+    const parsed = JSON.parse(content);
 
     return {
       ...state,
       taskName: parsed.taskName,
       subject: parsed.subject,
-      emailContent: parsed.emailContent,
+      emailContent: parsed.emailContent
     };
   } catch (err) {
     console.error('Task generation failed:', err);
@@ -52,14 +61,14 @@ async function generateTask(
   }
 }
 
-export function createTaskGeneratorNode (model: ChatOpenAI | Ollama) {
+export function createTaskGeneratorNode(model: ChatOpenAI | Ollama) {
   return {
     id: 'task-generator',
-    description: 'Generates a task based on the provided context.',
+    description: 'Generates a structured task with subject and email content.',
     run: withValidation(
       stateSchema,
       (state) => generateTask(model, state)
     ),
     ends: ['email-hydration'],
-  }
+  };
 }
