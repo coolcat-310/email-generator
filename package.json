@@ -10,6 +10,8 @@
     "start": "tsx src/index.ts",
     "start:email": "tsx src/index.ts email",
     "start:task": "tsx src/index.ts task",
+    "start:task:ollama": "tsx src/index.ts task ollama",
+    "start:task:openai": "tsx src/index.ts task openai",
     "test": "vitest",
     "lint": "eslint 'src/**/*.ts'",
     "eval": "tsx src/evaluations/evaluators/evaluateEmailGenerator.ts"

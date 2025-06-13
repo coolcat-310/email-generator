@@ -1,13 +1,13 @@
 import { StateGraph, START, END } from "@langchain/langgraph";
-import { createOllamaModel } from "../models/ollama";
 import { createTaskGeneratorNode, createEmailHydrationNode, createBrandStyleNode } from "../nodes";
 import { stateSchema } from "../state/schema";
+import { ChatOpenAI } from '@langchain/openai';
+import { Ollama } from '@langchain/ollama';
 
-export function buildTaskGraph() {
+export function buildTaskGraph(model: ChatOpenAI | Ollama) {
   const graph = new StateGraph(stateSchema);
-  const ollamaModel = createOllamaModel();
 
-  const taskNode = createTaskGeneratorNode(ollamaModel);
+  const taskNode = createTaskGeneratorNode(model);
   graph.addNode(taskNode.id, taskNode.run, { ends: taskNode.ends });
 
   const brandStyleNode = createBrandStyleNode();

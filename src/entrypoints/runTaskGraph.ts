@@ -1,7 +1,9 @@
 import { buildTaskGraph } from "../graph/TaskOrientedGraph";
+import { createModel } from "../models/modelResolver";
 
-export async function runTaskGraph() {
-  const taskApp = buildTaskGraph();
+export async function runTaskGraph(modelArg: string) {
+  const model = createModel(modelArg);
+  const taskApp = buildTaskGraph(model);
 
   const taskResult = await taskApp.invoke(
     { userInput: "Generate Email content for the brandName, Endpoint" },
