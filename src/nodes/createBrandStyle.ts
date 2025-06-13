@@ -27,30 +27,20 @@ const brandResources = {
 
   // 🎃 Halloween theme
   HALLOWEEN: {
-    logo: "https://your-cdn.com/logos/halloween-logo.png",  // update with your asset
+    logo: "https://images.rawpixel.com/image_1300/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI1LTA1L3NyLWltYWdlLTAyMDUyMDI1LXRoMTctcy00MTctbWFtYWNtMTMuanBn.jpg",  // update with your asset
     emailSignature: "Spooky Support 👻",
     primaryColor: "#FF7518",      // Pumpkin orange
     secondaryColor: "#1B1B1B",    // Dark spooky background
-    textColor: "#FFFFFF",
+    textColor: "#222222",        // body text
     mutedTextColor: "#CCCCCC",
     borderColor: "#FF7518"
-  },
-    // 🍀 St. Patrick's Day theme
-  STPATRICK: {
-    logo: "https://your-cdn.com/logos/stpatrick-logo.png",  // update with your asset
-    emailSignature: "Lucky Support 🍀",
-    primaryColor: "#1B5E20",      // Shamrock green
-    secondaryColor: "#E8F5E9",    // Soft light green
-    textColor: "#1B1B1B",
-    mutedTextColor: "#4CAF50",
-    borderColor: "#A5D6A7"
   },
   DEFAULT: {
     logo: "https://example.com/default-logo.png",
     emailSignature: "The Team",
     primaryColor: "#000000",
     secondaryColor: "#ffffff",
-    textColor: "#000000",
+    textColor: "#222222",        // body text
     mutedTextColor: "#666666",
     borderColor: "#cccccc",
   },

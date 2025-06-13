@@ -14,7 +14,7 @@ export function createEmailHydrationNode() {
         console.log("📩 [email-hydration] Hydrating email template...");
 
         const layoutPath = path.resolve("src/resources/layout.html");
-        const hydratedPath = path.resolve("src/results/hydrated-layout.html");
+        const hydratedPath = path.resolve(`src/results/hydrated-layout-${state.brandName}.html`);
 
         const layoutTemplate = await fs.readFile(layoutPath, "utf8");
 

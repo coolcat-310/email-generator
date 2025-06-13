@@ -1,9 +1,14 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Ollama } from '@langchain/ollama';
 import { z } from 'zod';
-import { stateSchema } from '../state/schema';
+import { StructuredOutputParser } from '@langchain/core/output_parsers';
+import { stateSchema, taskSchema } from '../state/schema';
 import { withValidation } from '../utility/withValidation';
 import { loadApprovedEmails } from '../utility/loadApprovedEmails';
+
+
+
+const parser = StructuredOutputParser.fromZodSchema(taskSchema);
 
 const context = 'John Does is missing contact information and needs to log into application to complete his personal information.';
 
@@ -17,37 +22,30 @@ async function generateTask(
       .map((ex) => `Task Name: ${ex.taskName}\nSubject: ${ex.subject}\nEmail: ${ex.email}`)
       .join('\n\n---\n\n');
 
+    const formatInstructions = parser.getFormatInstructions();
+
     const prompt = `
-        Here are approved email examples:
+Here are approved email examples:
 
-        ${approvedEmailExamples}
+${approvedEmailExamples}
 
-        Now generate a new task based on the following context: "${context}".
+Now generate a new task based on the following context: "${context}".
 
-        Please return only valid JSON with the following structure:
-
-        {
-          "taskName": "<task name>",
-          "subject": "<subject>",
-          "emailContent": "<email body text>"
-        }
-
-        The JSON must not contain any extra text or explanation.
-        `.trim();
+${formatInstructions}
+`.trim();
 
     const response = await model.invoke([{ role: 'user', content: prompt }]);
 
-    let content: string;
-
+    let rawContent: string;
     if (typeof response === 'string') {
-      content = response;
+      rawContent = response;
     } else if ('content' in response && typeof response.content === 'string') {
-      content = response.content;
+      rawContent = response.content;
     } else {
       throw new Error("Unexpected response format from model.invoke");
     }
 
-    const parsed = JSON.parse(content);
+    const parsed = await parser.parse(rawContent);
 
     return {
       ...state,

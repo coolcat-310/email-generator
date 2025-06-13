@@ -17,3 +17,9 @@ export const stateSchema = z.object({
   mutedTextColor: z.string().optional(),
   borderColor: z.string().optional(),
 });
+
+export const taskSchema = z.object({
+  taskName: z.string(),
+  subject: z.string(),
+  emailContent: z.string(),
+});
