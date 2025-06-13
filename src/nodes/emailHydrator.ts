@@ -7,7 +7,7 @@ import { withValidation } from '../utility/withValidation';
 export function createEmailHydrationNode() {
   return {
     id: 'email-hydration',
-    description: 'Hydrates the layout template by replacing {{content}} with generated task and saves to file.',
+    description: 'Hydrates the layout template by replacing {{variables}} with state values and saves to file.',
     run: withValidation(
       stateSchema,
       async (state: z.infer<typeof stateSchema>) => {
@@ -17,16 +17,28 @@ export function createEmailHydrationNode() {
         const hydratedPath = path.resolve("src/results/hydrated-layout.html");
 
         const layoutTemplate = await fs.readFile(layoutPath, "utf8");
-        const content = state.task ?? "(no content provided)";
 
-        // Perform replacements
-        let hydratedHtml = layoutTemplate.replace(/{{\s*content\s*}}/g, content);
-        hydratedHtml = hydratedHtml.replace(/{{\s*brandName\s*}}/g, state.brandName ?? "");
-        hydratedHtml = hydratedHtml.replace(/{{\s*emailSignature\s*}}/g, state.emailSignature ?? "");
-        hydratedHtml = hydratedHtml.replace(/{{\s*logo\s*}}/g, state.logo ?? "");
+        // Build key-value dictionary of all placeholders
+        const replacements: Record<string, string> = {
+          content: state.emailContent ?? "(no content provided)",
+          brandName: state.brandName ?? "",
+          emailSignature: state.emailSignature ?? "",
+          logo: state.logo ?? "",
+          primaryColor: state.primaryColor ?? "#000000",
+          secondaryColor: state.secondaryColor ?? "#ffffff",
+          textColor: state.textColor ?? "#000000",
+          mutedTextColor: state.mutedTextColor ?? "#666666",
+          borderColor: state.borderColor ?? "#cccccc",
+        };
 
+        let hydratedHtml = layoutTemplate;
 
-        // Write hydrated file to output location
+        // Generic replace for all placeholders
+        for (const [key, value] of Object.entries(replacements)) {
+          const regex = new RegExp(`{{\\s*${key}\\s*}}`, "g");
+          hydratedHtml = hydratedHtml.replace(regex, value);
+        }
+
         await fs.writeFile(hydratedPath, hydratedHtml, "utf8");
         console.log(`✅ [email-hydration] Hydrated HTML saved to: ${hydratedPath}`);
 
